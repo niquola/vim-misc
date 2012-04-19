@@ -66,9 +66,28 @@ fun! InflectorMethods(A,L,P)
 endfun
 
 fun! Inflector(method) range
-  let s:cmd = ":'<,'>!inflector ".a:method  
+  let s:cmd = ":'<,'>!inflector ".a:method
   echo s:cmd
   exec s:cmd
 endfun
 
 command! -nargs=1  -range -complete=custom,InflectorMethods Inflector call Inflector( '<args>')
+
+fun! SetRailsAlternate()
+  let s:file = expand('%:p')
+  if match(s:file,"_controller.rb") > -1
+    let s:request_path = substitute(s:file,'controller.rb','spec.rb','')
+    let s:request_path = substitute(s:request_path,'app/controllers','spec/requests','')
+    let s:cmd = ':Rset b:alternate='.s:request_path
+    exec s:cmd
+  end
+
+  if match(s:file,"spec/requests") > -1
+    let s:controller_path = substitute(s:file,'spec.rb','controller.rb','')
+    let s:controller_path = substitute(s:controller_path,'spec/requests','app/controllers','')
+    let s:cmd = ':Rset b:alternate='.s:controller_path
+    exec s:cmd
+  end
+endfun
+
+au BufNewFile,BufRead *.rb call SetRailsAlternate()
