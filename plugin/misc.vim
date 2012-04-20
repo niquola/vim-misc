@@ -78,16 +78,19 @@ fun! SetRailsAlternate()
   if match(s:file,"_controller.rb") > -1
     let s:request_path = substitute(s:file,'controller.rb','spec.rb','')
     let s:request_path = substitute(s:request_path,'app/controllers','spec/requests','')
-    let s:cmd = ':Rset b:alternate='.s:request_path
+    let s:cmd = 'Rset b:alternate='.s:request_path
     exec s:cmd
   end
 
   if match(s:file,"spec/requests") > -1
     let s:controller_path = substitute(s:file,'spec.rb','controller.rb','')
     let s:controller_path = substitute(s:controller_path,'spec/requests','app/controllers','')
-    let s:cmd = ':Rset b:alternate='.s:controller_path
+    let s:cmd = 'Rset b:alternate='.s:controller_path
     exec s:cmd
   end
 endfun
 
-au BufNewFile,BufRead *.rb call SetRailsAlternate()
+au BufEnter *.rb
+  \ if exists("b:rails_root") |
+  \   call SetRailsAlternate() |
+  \ endif |
